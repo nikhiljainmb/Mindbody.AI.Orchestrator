@@ -9,7 +9,8 @@ e.g. `tasks/2026-08-31-autopay-retry-policy/`).
 |---|---|---|
 | `prd.md` | orchestrator (from `templates/prd.md`) | `/ac` only, before approval |
 | `plan.md` | orchestrator (from `templates/plan.md`) | after task breakdown |
-| `status.md` | orchestrator | one line, updated at each phase: `planning \| implementing \| reviewing \| done \| blocked` + timestamp |
+| `status.md` | orchestrator | one line, updated at each phase: `planning \| implementing \| reviewing \| done \| blocked \| escalated` + timestamp |
+| `verification-checklist.md` | orchestrator (from `templates/verification-checklist.md`) | at the final gate |
 | `final-status.md` | orchestrator | archived copy of FINAL_STATUS.md at run end |
 | archived run files | orchestrator | previous run's shared-workspace/ files, moved here when a new run starts |
 

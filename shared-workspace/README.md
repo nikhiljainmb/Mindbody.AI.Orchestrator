@@ -3,7 +3,9 @@
 Live coordination files for the **current run**. Contents are gitignored runtime state;
 this README (the contract) is committed. Durable records are archived to `tasks/` — at the
 start of every new run the orchestrator moves the previous run's files into that run's
-`tasks/YYYY-MM-DD-<slug>/` folder, then starts clean. Nothing is ever destructively wiped.
+`tasks/YYYY-MM-DD-<slug>/` folder, then starts clean. Nothing is ever destructively wiped —
+with one exception: a `REVIEW_ONLY` run (`/review`) creates no task folder, so its files are
+ephemeral and may be discarded when the next run starts.
 
 **The one invariant that makes parallel agents safe: every file has exactly one writer.**
 
@@ -12,11 +14,11 @@ start of every new run the orchestrator moves the previous run's files into that
 | `ORCHESTRATOR_CONSTRAINTS.md` | orchestrator | all agents | created before any agent is spawned; **immutable** during the run |
 | `CODING_PROGRESS.md` | coder (**append-only**) | orchestrator | grows during implementation; never edit prior entries |
 | `TEST_RESULTS.md` | test-runner | orchestrator, reviewer-testing, synthesizer | overwritten each run — latest results are the truth |
-| `REVIEW_ARCHITECTURE.md` | reviewer-architecture | synthesizer | overwritten each review cycle |
-| `REVIEW_TESTING.md` | reviewer-testing | synthesizer | overwritten each review cycle |
-| `REVIEW_QUALITY.md` | reviewer-quality | synthesizer | overwritten each review cycle |
-| `REVIEW_SECURITY.md` | reviewer-security | synthesizer | overwritten each review cycle |
-| `REVIEW_CHECKLIST.md` | review-synthesizer | orchestrator, coder | overwritten each review cycle |
+| `REVIEW_ARCHITECTURE.md` | reviewer-architecture | synthesizer | overwritten when this reviewer re-runs; an approving reviewer's report carries forward across fix cycles |
+| `REVIEW_TESTING.md` | reviewer-testing | synthesizer | same as above |
+| `REVIEW_QUALITY.md` | reviewer-quality | synthesizer | same as above |
+| `REVIEW_SECURITY.md` | reviewer-security | synthesizer | same as above |
+| `REVIEW_CHECKLIST.md` | review-synthesizer | orchestrator | rebuilt each review cycle |
 | `FINAL_STATUS.md` | orchestrator | human, doc-generator | written exactly once, last; archived to tasks/ |
 
 ## Schemas
@@ -109,7 +111,7 @@ Finding ID prefixes: A=architecture, T=testing, Q=quality, S=security.
 |----------|---------|--------------|--------|
 
 ## Overall verdict: APPROVE | APPROVE_WITH_NITS | REQUEST_CHANGES
-(any Critical, or 2+ REQUEST_CHANGES → REQUEST_CHANGES)
+(any Critical, or 2+ REQUEST_CHANGES → REQUEST_CHANGES; otherwise the worst individual verdict)
 
 ## Must fix before done
 - [ ] <ID> (<severity>, <reviewer>) <file:line> — <issue> → <fix>
@@ -131,6 +133,9 @@ Completed: <timestamp> | Review cycles used: <n> of <max>
 ## Quality
 Tests: <passed>/<total> PASS | Coverage (new code): <%> vs target <%> (Tier 1|2)
 Waivers: <none, or the waiver + reason from constraints>
+
+## Documentation (only when doc-generator ran; from its final response)
+- <doc file touched> — <what changed>
 
 ## Open items (non-blocking)
 - <deferred Minor findings, with file refs>
