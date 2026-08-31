@@ -1,0 +1,18 @@
+# Personal overrides — copy this file to CLAUDE.local.md (gitignored)
+#
+# Rules here take precedence over CLAUDE.md/AGENTS.md (see AGENTS.md precedence rule).
+# Tighten or specialize — do not contradict invariant rules.
+
+## Quality bar overrides
+# Coverage target for new/changed code. Default 95. Hard floor: 80.
+# coverage_mandate: 90
+
+## My machine
+# Preferred test command (overrides auto-detection by test-runner):
+# test_command: dotnet test ./src/MyService.sln --nologo
+# Windows tool paths, local ports, VPN quirks, etc.:
+# - reportgenerator lives at C:\tools\reportgenerator.exe
+
+## My preferences
+# - Ask before touching database migration files.
+# - Use conventional commits (feat:/fix:/chore:).

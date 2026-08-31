@@ -1,0 +1,21 @@
+# Personal instruction overrides
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Runtime coordination files (the contract README stays committed)
+shared-workspace/*
+!shared-workspace/README.md
+!shared-workspace/.gitkeep
+
+# Per-task runtime records.
+# Want durable task history in git? Delete the next three lines.
+tasks/*
+!tasks/README.md
+!tasks/.gitkeep
+
+# OS / editor noise
+Thumbs.db
+.DS_Store
+*.swp
+.idea/
+.vscode/
