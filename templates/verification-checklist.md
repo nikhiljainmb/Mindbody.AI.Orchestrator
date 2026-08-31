@@ -16,7 +16,6 @@ and commands come from ORCHESTRATOR_CONSTRAINTS.md.
       - [ ] AC2: <criterion> → <evidence>
 - [ ] Merged review verdict is APPROVE or APPROVE_WITH_NITS
       (REVIEW_CHECKLIST.md, cycle <N> of <max>)
-- [ ] FINAL_STATUS.md written with evidence — commands and results, not claims
 
 Any box unchecked → not DONE: run another fix cycle if within the max set in
 ORCHESTRATOR_CONSTRAINTS.md, otherwise escalate in FINAL_STATUS.md.

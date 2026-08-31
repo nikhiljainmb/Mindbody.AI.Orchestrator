@@ -43,23 +43,34 @@ builder.Services.AddOptions<RetryOptions>()
 
 An outcome the caller must handle (validation failure, not-found, rejected state transition)
 is a return value, not an exception. Exceptions are for bugs and infrastructure faults.
-Callers switch on the result; nothing is thrown across layers for control flow.
+Failures carry a typed error code plus a human-readable message, so callers switch on the
+code; nothing is thrown across layers for control flow.
 
 ```csharp
+public enum OrderError { NotFound, NotConfirmable, ValidationFailed }
+
+public sealed record Error(OrderError Code, string Message);
+
 public sealed record Result<T>
 {
     public bool IsSuccess { get; init; }
     public T? Value { get; init; }
-    public string? Error { get; init; }
+    public Error? Error { get; init; }
 
     public static Result<T> Success(T value) => new() { IsSuccess = true, Value = value };
-    public static Result<T> Failure(string error) => new() { Error = error };
+    public static Result<T> Failure(Error error) => new() { Error = error };
 }
 
-public Result<Order> Confirm(Order order) =>
-    order.Status == OrderStatus.PendingConfirmation
-        ? Result<Order>.Success(order.WithStatus(OrderStatus.Confirmed))
-        : Result<Order>.Failure("Order is not in a confirmable state");
+public Result<Order> Confirm(Order order)
+{
+    ArgumentNullException.ThrowIfNull(order);
+    return order.Status switch
+    {
+        OrderStatus.Confirmed => Result<Order>.Success(order),   // idempotent no-op: already done
+        OrderStatus.PendingConfirmation => Result<Order>.Success(order.WithStatus(OrderStatus.Confirmed)),
+        _ => Result<Order>.Failure(new Error(OrderError.NotConfirmable, "Order is not in a confirmable state")),
+    };
+}
 ```
 
 ## Layering and dependency direction
@@ -85,14 +96,23 @@ internal sealed class SqlOrderProvider(IDbConnectionFactory db) : IOrderProvider
 
 Controllers own HTTP concerns only: routing, auth attributes, request-shape validation,
 mapping transport models to domain requests, and mapping results to status codes. No
-business rules, no branching on domain state — one service call per action.
+business rules, no branching on domain state — one service call per action. Controllers
+translate error codes to transport, never invent outcomes.
 
 ```csharp
 [HttpPost("{id}/confirm")]
 public async Task<IActionResult> Confirm(Guid id, CancellationToken ct)
 {
     var result = await _orderService.ConfirmAsync(new OrderId(id), ct);
-    return result.IsSuccess ? Ok(OrderResponse.From(result.Value!)) : Conflict(result.Error);
+    if (result.IsSuccess) return Ok(OrderResponse.From(result.Value!));
+
+    return result.Error!.Code switch
+    {
+        OrderError.NotFound => NotFound(result.Error.Message),
+        OrderError.NotConfirmable => Conflict(result.Error.Message),
+        OrderError.ValidationFailed => UnprocessableEntity(result.Error.Message),
+        _ => StatusCode(StatusCodes.Status500InternalServerError),
+    };
 }
 ```
 
@@ -108,7 +128,7 @@ would compile silently.
 public async Task<Result<Order>> ConfirmAsync(OrderId id, CancellationToken ct)
 {
     var order = await _provider.GetAsync(id, ct);          // token flows down
-    if (order is null) return Result<Order>.Failure("Order not found");
+    if (order is null) return Result<Order>.Failure(new Error(OrderError.NotFound, "Order not found"));
     return Confirm(order);
 }
 ```

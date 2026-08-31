@@ -4,11 +4,14 @@
 # Tighten or specialize — do not contradict invariant rules.
 
 ## Quality bar overrides
-# Coverage target for new/changed code. Default 95. Hard floor: 80.
+# Coverage target for new/changed code — the orchestrator transcribes the effective value
+# into ORCHESTRATOR_CONSTRAINTS.md at run start. Defaults and floor: the verification-protocol
+# skill.
 # coverage_mandate: 90
 
 ## My machine
-# Preferred test command (overrides auto-detection by test-runner):
+# Preferred test command — the orchestrator transcribes it into the constraints'
+# "Test command" field at run start:
 # test_command: dotnet test ./src/MyService.sln --nologo
 # Windows tool paths, local ports, VPN quirks, etc.:
 # - reportgenerator lives at C:\tools\reportgenerator.exe

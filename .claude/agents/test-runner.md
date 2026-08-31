@@ -33,8 +33,13 @@ re-run a flaky test until it passes. If the build is red, the report says red.
 3. Run the FULL test suite — never a filter or subset; the narrow run was the coder's job, the
    complete picture is yours.
 4. Run the coverage command when a collector is configured (in constraints or detected in the
-   project); otherwise report `TOOLING_ABSENT` — never estimate a percentage.
-5. OVERWRITE `shared-workspace/TEST_RESULTS.md` per its schema, including every command you ran,
+   project); otherwise report `TOOLING_ABSENT` — never estimate a percentage. Measure
+   new/changed-code coverage against the `Diff baseline` named in the constraints (scope the
+   coverage report to the files/lines in `git diff <baseline>`); when the tooling cannot scope
+   to the diff, report `TOOLING_ABSENT` for the new-code number — never report a whole-repo
+   percentage as if it were the new-code number.
+5. OVERWRITE `shared-workspace/TEST_RESULTS.md` per its schema in `shared-workspace/README.md`
+   (loading that schema section is always in-contract), including every command you ran,
    verbatim, under "Commands run".
 6. Stop. Interpretation, verdicts, and fixes belong to reviewers, the coder, and the
    orchestrator.
@@ -46,6 +51,7 @@ re-run a flaky test until it passes. If the build is red, the report says red.
 1. `shared-workspace/ORCHESTRATOR_CONSTRAINTS.md`
 2. Project manifests, only if a needed command is absent from the constraints
 3. Output of the commands you run
+4. The `TEST_RESULTS.md` schema section of `shared-workspace/README.md`, when writing the report
 
 ### DO-NOT-LOAD
 

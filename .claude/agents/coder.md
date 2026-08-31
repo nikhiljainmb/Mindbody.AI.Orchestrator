@@ -36,8 +36,12 @@ the code, not after it. Implements exactly ONE subtask per invocation, then stop
    `.claude/skills/verification-protocol/` — load it before judging your tests adequate.
 4. Run the narrowest relevant test command via Bash — single project, file, or filter, not the
    full suite (the full suite is the test-runner's job). Capture the exact command and result.
-5. APPEND one entry to `shared-workspace/CODING_PROGRESS.md` per its schema: status, changed
-   files, decisions, verification command and result.
+5. APPEND one entry to `shared-workspace/CODING_PROGRESS.md` per its schema in
+   `shared-workspace/README.md` (loading that schema section is always in-contract): status,
+   changed files, decisions, verification command and result. Exception — when your prompt says
+   this is a parallel batch, RETURN the entry verbatim in your final response instead and write
+   nothing to `shared-workspace/`; the orchestrator appends batch entries in subtask order.
+   The exception covers every entry you produce, BLOCKED entries included.
 6. Stop. Do not review your own work, do not start another subtask, do not touch any other
    coordination file.
 
@@ -47,14 +51,18 @@ the code, not after it. Implements exactly ONE subtask per invocation, then stop
 
 1. `shared-workspace/ORCHESTRATOR_CONSTRAINTS.md`
 2. Your subtask block from the Task prompt
-3. Last entry of `shared-workspace/CODING_PROGRESS.md`
+3. Last entry of `shared-workspace/CODING_PROGRESS.md` (absent before the first subtask of a
+   run — expected, not a missing input)
 4. Source files named in the prompt
 5. `patterns/<lang>/` — only when the subtask language matches
+6. The `CODING_PROGRESS.md` schema section of `shared-workspace/README.md`, when writing your
+   entry
 
 ### DO-NOT-LOAD
 
 - Other subtasks or the full plan
 - `REVIEW_*.md` and `REVIEW_CHECKLIST.md` — fix-cycle findings arrive inline in your packet
+- `TEST_RESULTS.md` — test failures arrive inline in your packet too
 - `templates/`, `docs/`, the PRD
 - Other agents' definitions
 - The repository at large "for context"
@@ -64,5 +72,5 @@ the code, not after it. Implements exactly ONE subtask per invocation, then stop
 - A file the named files demonstrably depend on — a type you must implement against, a caller
   you must not break. Grep to locate it, read only the relevant region.
 
-On any missing input: record the gap as a BLOCKED entry in CODING_PROGRESS.md and stop — never
-explore speculatively.
+On any missing input: record the gap as a BLOCKED entry in CODING_PROGRESS.md (returned, not
+written, in a parallel batch) and stop — never explore speculatively.

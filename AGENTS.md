@@ -19,11 +19,13 @@ apply to all AI coding agents (Claude Code, Cursor, Copilot, Codex).
 3. **Pass context by pointer, not payload.** Delegations name file paths and one subtask;
    inline only decision-critical snippets under ~20 lines. Every delegation ends with an
    explicit "not your job" list.
-4. **Tests ship with code.** Target: ≥95% line coverage of NEW/CHANGED code (see
+4. **Tests ship with code.** The coverage target for NEW/CHANGED code is set per run in
+   ORCHESTRATOR_CONSTRAINTS.md (default 95%, floor 80% — rules in
    `.claude/skills/verification-protocol/`). The independent reviewer verdict is the gate —
    a coder claiming green is not evidence.
-5. **Bounded loops.** Max 3 review-fix cycles per run (set in ORCHESTRATOR_CONSTRAINTS.md),
-   then stop and escalate to the human in FINAL_STATUS.md. Never loop indefinitely.
+5. **Bounded loops.** Review-fix cycles (review → fix → re-review) are capped by
+   ORCHESTRATOR_CONSTRAINTS.md (default 3); at the cap, stop and escalate to the human in
+   FINAL_STATUS.md. Never loop indefinitely.
 6. **Evidence or it didn't happen.** No subtask is complete without its verification command
    and result recorded in CODING_PROGRESS.md. Writing FINAL_STATUS.md as DONE while any
    Critical finding is open is a protocol violation.
@@ -32,7 +34,7 @@ apply to all AI coding agents (Claude Code, Cursor, Copilot, Codex).
 
 | Role | Does | Writes (only) |
 |---|---|---|
-| Orchestrator (main instance) | Plans, delegates, verifies, reports | ORCHESTRATOR_CONSTRAINTS.md, FINAL_STATUS.md, tasks/ records |
+| Orchestrator (main instance) | Plans, delegates, verifies, reports | ORCHESTRATOR_CONSTRAINTS.md, FINAL_STATUS.md, tasks/ records; CODING_PROGRESS.md only to append coder-returned parallel-batch entries |
 | coder | Implements ONE subtask + its tests | source/test files, CODING_PROGRESS.md (append) |
 | test-runner | Runs build/tests/coverage; facts only, never fixes | TEST_RESULTS.md |
 | reviewer-architecture | Pattern & layering compliance | REVIEW_ARCHITECTURE.md |
@@ -49,7 +51,8 @@ The full file contract (schemas, lifecycle) is in `shared-workspace/README.md`.
 
 - `/coordinate "<task>"` — fully autonomous: breakdown → implement → test → review → report.
 - `/ac "<task>"` — plan-first: clarifying questions → PRD → explicit human approval → pipeline.
-- `/review [target]` — parallel code review only; changes nothing outside shared-workspace/.
+- `/review [target]` — parallel code review only; changes no source code, writes only
+  coordination state.
 
 ## Context discipline
 

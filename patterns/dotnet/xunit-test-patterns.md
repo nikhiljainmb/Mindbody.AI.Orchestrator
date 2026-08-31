@@ -17,7 +17,7 @@ public void Confirm_OrderNotConfirmable_ReturnsFailure()
     var result = _service.Confirm(order);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(OrderError.NotConfirmable, result.Error);
+    Assert.Equal(OrderError.NotConfirmable, result.Error!.Code);
 }
 ```
 
@@ -81,14 +81,15 @@ contract), not implementation details (call order, incidental lookups). A test t
 on refactoring with unchanged behavior is over-mocked.
 
 ```csharp
-var notifier = new Mock<IOrderNotifier>();
-var service = new OrderService(FakeRepository.WithOrder(order), notifier.Object);
+var provider = new Mock<IOrderProvider>();
+provider.Setup(p => p.GetAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
+var service = new OrderService(provider.Object, new FakeClock());
 
 var result = await service.ConfirmAsync(order.Id, CancellationToken.None);
 
 Assert.True(result.IsSuccess);
-notifier.Verify(n => n.OrderConfirmedAsync(order.Id, It.IsAny<CancellationToken>()), Times.Once);
-// bad: notifier.Verify(n => n.GetTemplate(...))  — incidental call, not the contract
+Assert.Equal(OrderStatus.Confirmed, result.Value!.Status);
+// bad: provider.Verify(p => p.GetAsync(...), Times.Once) — incidental lookup, not the contract
 ```
 
 ## Negative and edge cases: required per branch

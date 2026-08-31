@@ -31,13 +31,14 @@ flowchart TD
         RS["reviewer-security"]
     end
     PR --> SY["review-synthesizer: merged verdict"]
-    SY -->|"REQUEST_CHANGES, cycles used under 3"| C
+    SY -->|"REQUEST_CHANGES, cycles under the cap"| C
     SY -->|"APPROVE or APPROVE_WITH_NITS"| FS["Orchestrator: FINAL_STATUS.md"]
-    SY -->|"3 fix cycles exhausted"| ES["FINAL_STATUS.md: ESCALATED"]
+    SY -->|"fix-cycle cap exhausted"| ES["FINAL_STATUS.md: ESCALATED"]
 ```
 
 `/ac` runs the same pipeline behind a PRD and an explicit human-approval gate; `/review` runs only
-the review stage and changes nothing outside `shared-workspace/`.
+the review stage and changes no source code — its only write outside `shared-workspace/` is
+archiving a previous pipeline run's files into that run's task folder.
 
 ## One run, end to end
 
@@ -74,10 +75,10 @@ sequenceDiagram
     R-->>O: REVIEW_ARCHITECTURE.md, REVIEW_TESTING.md,<br/>REVIEW_QUALITY.md, REVIEW_SECURITY.md
     O->>S: merge the four reports
     S-->>O: writes REVIEW_CHECKLIST.md (overall verdict)
-    alt REQUEST_CHANGES and cycles used under 3
+    alt REQUEST_CHANGES and cycles under the cap
         O->>C: fix blocking findings, then re-test, re-review
     end
-    O->>H: writes FINAL_STATUS.md, archives run to tasks/
+    O->>H: writes FINAL_STATUS.md — copies it to<br/>tasks/&lt;id&gt;/final-status.md (run files archive<br/>when the next run starts)
 ```
 
 ## Design decisions

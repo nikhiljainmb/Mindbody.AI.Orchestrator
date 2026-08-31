@@ -12,25 +12,5 @@ Out of scope:
 
 ---
 
-Repeat the section below once per subtask. Field shape and semantics are exactly
-`templates/task.md` — do not add, drop, or rename fields.
-
-## Subtask <NN>: <imperative title>
-
-status: [todo|doing|verified|blocked|escalated]
-Depends on: <subtask NNs, or none>
-Files:
-- <exact/path> (new)
-- <exact/path> (modify)
-- <exact/path> (read)
-parallel-safe: yes|no
-
-### Goal
-<1-2 lines>
-
-### Acceptance criteria
-- <observable behavior>
-
-### Verification
-- Build: `<command>`
-- Test: `<command>`
+<Repeat one `templates/task.md` subtask section per subtask — copy that template verbatim and
+fill it in. Field shape and semantics live there; do not add, drop, or rename fields.>

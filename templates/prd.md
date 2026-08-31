@@ -38,7 +38,6 @@ Must be empty before Status moves to Approved.
 - <question blocking approval>
 
 ## Approval
-Approval requires an explicit affirmative from the human ("yes", "approved") — silence,
-or absence of objection, is not approval.
+Gate rules: prd-building skill, Step 6 (explicit affirmative only).
 Approved by: <name> | Date: <YYYY-MM-DD>
 Verbatim reply: "<the human's approval message>"

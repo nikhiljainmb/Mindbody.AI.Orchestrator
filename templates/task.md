@@ -23,6 +23,7 @@ Observable behavior only — never implementation steps.
 - <given/when/then, or a condition checkable by command>
 
 ### Verification
-Exact commands — the coder runs them, the test-runner re-runs them.
+Exact commands — the coder runs them; the orchestrator checks them against the test-runner's
+full-suite results (verification-protocol Step 2).
 - Build: `<command>`
 - Test: `<command>`

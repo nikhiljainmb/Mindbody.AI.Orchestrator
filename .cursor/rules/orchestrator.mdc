@@ -3,11 +3,16 @@ description: Mindbody AI Orchestrator workflow
 alwaysApply: true
 ---
 
-Read AGENTS.md first — roles, invariant rules, and the quality bar live there and bind here.
+Read AGENTS.md first — roles, invariant rules, and the quality bar live there and bind here,
+with one recorded exception: Cursor has no subagents, so the role separation behind invariant
+rules 2 and 4 cannot hold — you play every role sequentially.
 
-Cursor has no subagents and no slash commands. To run a workflow, open the matching file in
-.claude/commands/ (coordinate.md, ac.md, review.md) and follow it as a step-by-step protocol
-yourself: play each role sequentially — coder, test-runner, the four reviewers, synthesizer —
-and write the same shared-workspace/ files each role owns, per shared-workspace/README.md.
+To run a workflow, open the matching file in .claude/commands/ (coordinate.md, ac.md,
+review.md) and follow it as a step-by-step protocol, playing each role in order — coder,
+test-runner, the four reviewers, synthesizer — and writing the same shared-workspace/ files
+each role owns, per shared-workspace/README.md. Compensate for the missing separation:
+actually execute the verification-protocol gates (full suite + coverage in the terminal)
+before any review step, review each lens in a fresh context where the editor allows it, and
+record in FINAL_STATUS.md that roles were not independent this run.
 
 Load .claude/skills/*/SKILL.md on demand as reference docs; never preemptively.

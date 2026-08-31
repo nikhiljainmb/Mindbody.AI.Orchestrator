@@ -13,9 +13,8 @@ Plan first, execute only after explicit human approval. You are the orchestrator
 3. **Draft the PRD.** Create `tasks/YYYY-MM-DD-<slug>/prd.md` from `templates/prd.md` and
    present the PRD inline in chat for approval.
 
-4. **APPROVAL GATE.** Proceed only on an explicit affirmative from the human ("approved",
-   "yes, go", or equivalent). A change request means: revise the PRD and re-present — as many
-   rounds as it takes, no limit. Silence, ambiguity, or a partial answer is not approval. Do not
+4. **APPROVAL GATE.** Apply the gate exactly as `prd-building` Step 6 defines it (explicit
+   affirmative only; change requests mean revise and re-present, unlimited rounds). Do not
    begin implementation under any other condition.
 
 5. **Execute.** On approval: mark prd.md `Status: Approved (<YYYY-MM-DD>)`. Then follow

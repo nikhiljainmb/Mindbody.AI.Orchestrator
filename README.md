@@ -3,6 +3,11 @@
 Multi-instance Claude/Cursor orchestration platform for reliable, template-driven software
 development workflows.
 
+> "Multi-instance" in v1 means one Claude session orchestrating many parallel subagent
+> instances. Run one pipeline at a time per clone — concurrent sessions on the same clone
+> clobber each other's `shared-workspace/`; true concurrent-session support arrives with v2
+> git worktrees (see roadmap).
+
 ## The problem
 
 Multiple developers times individual AI habits equals fragmented knowledge that never compounds,
@@ -66,7 +71,9 @@ Then pick an entry point:
   does everything: breakdown, implement, test, review, report.
 - **Option B — plan first.** `/ac "Add GetUser method that retrieves user by ID"` asks clarifying
   questions to build a PRD, gets your approval, then executes the same pipeline.
-- **Option C — review only.** `/review` checks code quality and changes nothing.
+- **Option C — review only.** `/review` checks code quality and changes no code — it writes
+  only `shared-workspace/` coordination files (plus archiving a previous run's files into that
+  run's task folder).
 
 ## Watching it work
 
@@ -123,9 +130,9 @@ role in sequence and writing the same `shared-workspace/` files.
 
 `docs/adoption.md` walks through three options:
 
-- **Copy in** — copy the config files into your repo and set your project's quality bar.
-- **Submodule** — pin this repo as a git submodule and wire your `CLAUDE.md` to it.
-- **Global** — install the shared pieces user-globally and keep projects untouched.
+- **Clone** — work inside this repo as a workspace; the fastest way to try the pipeline.
+- **Copy in** — copy the config set into your repo (recommended for real projects).
+- **Submodule** — track upstream via a git submodule and copy the same set from it.
 
 ## Extending & roadmap
 

@@ -29,34 +29,46 @@ Then append this repo's `.gitignore` entries to yours: the `CLAUDE.local.md` /
 `.claude/settings.local.json` lines and the `shared-workspace/*` and `tasks/*` blocks with their
 `!` exceptions. Skipping this commits runtime coordination state to your history.
 
-## C. Git submodule plus copied .claude/ (single upstream, many repos)
+## C. Submodule as the update vehicle (single upstream, many repos)
 
 ```
 git submodule add <this-repo-url> orchestrator
-cp -r orchestrator/.claude .claude
-mkdir -p shared-workspace tasks
 ```
 
-Claude Code reads `.claude/` only at the project root — a submodule copy alone is invisible, hence
-the copy step. Create a root `CLAUDE.md` that imports `@orchestrator/AGENTS.md` and mirrors the
-lazy-load table with `orchestrator/`-prefixed paths, and add the same `.gitignore` entries as
-option B. Everything except `.claude/` is then referenced from the submodule, so `git submodule
-update --remote` pulls upstream changes in one step.
+The submodule is never read in place: Claude Code reads `.claude/` (and Cursor reads `.cursor/`)
+only at the project root, and the agents and commands reference `shared-workspace/README.md`,
+`tasks/README.md`, `templates/`, and `patterns/<lang>/` by root-relative path. The submodule is
+the update vehicle — copy the same set as option B from `orchestrator/` into the project root:
+
+- `.claude/` (agents, commands, skills)
+- `.cursor/` (only if the team uses Cursor)
+- `AGENTS.md`
+- `CLAUDE.md` (merge as in option B if the project already has one)
+- `CLAUDE.local.md.example`
+- `templates/`
+- `patterns/`
+- `shared-workspace/` (README.md + .gitkeep)
+- `tasks/` (README.md + .gitkeep)
+
+Then add the same `.gitignore` entries as option B. Upgrading is `git submodule update --remote`
+followed by re-copying that set (diff before overwriting — see Upgrading below). What the
+submodule buys over option B is provenance: the pinned commit records exactly which upstream
+version the copies came from, and every repo pulls from the same upstream in one step.
 
 ## Trade-offs
 
 | | A: clone | B: copy set | C: submodule + copy |
 |---|---|---|---|
-| Setup cost | git clone | copy 8 items + .gitignore | submodule + copy .claude/ |
+| Setup cost | git clone | copy 8 items + .gitignore | submodule + same copy as B |
 | Best for | trying the pipeline | one production repo | many repos, one upstream |
-| Upstream updates | git pull | re-copy on release | pull submodule, re-copy .claude/ |
-| Local customization | edit in place | diverge freely | keep edits outside the submodule |
-| Main drawback | code inside a config repo | manual upgrades | two-step update; .claude/ duplicated |
+| Upstream updates | git pull | re-copy on release | pull submodule, re-copy the set |
+| Local customization | edit in place | diverge freely | diverge freely; diff against the submodule |
+| Main drawback | code inside a config repo | manual upgrades | two-step update; full set duplicated |
 
 ## Upgrading (B and C)
 
-On a new release: fetch the new version, then re-copy the option-B set (B) or run
-`git submodule update --remote` and re-copy `.claude/` (C). Before overwriting, diff your local
-edits against the incoming version — `git diff --no-index .claude/ <new>/.claude/` — and re-apply
-deliberately. Keep machine- and person-specific changes in `CLAUDE.local.md` (gitignored, never
+On a new release: fetch the new version, then re-copy the option-B set — from the fresh copy (B)
+or from the submodule after `git submodule update --remote` (C). Before overwriting, diff your
+local edits against the incoming version — `git diff --no-index .claude/ <new>/.claude/` — and
+re-apply deliberately. Keep machine- and person-specific changes in `CLAUDE.local.md` (gitignored, never
 shipped by a release), not in the copied files, and upgrades stay a clean overwrite.

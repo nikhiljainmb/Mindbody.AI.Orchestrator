@@ -21,11 +21,16 @@ agent — on any difference, the agent file wins and this matrix gets fixed.
 | coder | its context packet; ORCHESTRATOR_CONSTRAINTS.md; FILES IN SCOPE; patterns/ for the target language; last CODING_PROGRESS.md entry | REVIEW_*.md and REVIEW_CHECKLIST.md (fix-cycle findings arrive inline in the packet); TEST_RESULTS.md (the orchestrator summarizes failures into the packet); templates/; docs/; source outside FILES IN SCOPE |
 | test-runner | its context packet; ORCHESTRATOR_CONSTRAINTS.md (test + coverage commands and target) | source file contents beyond command output; every REVIEW_*.md; CODING_PROGRESS.md; patterns/; docs/ |
 | reviewer-architecture | its context packet; ORCHESTRATOR_CONSTRAINTS.md; the diff and files in scope; patterns/ for the target language | other reviewers' reports; REVIEW_CHECKLIST.md; CODING_PROGRESS.md; TEST_RESULTS.md; docs/ |
-| reviewer-testing | its context packet; ORCHESTRATOR_CONSTRAINTS.md; the diff, test files, and TEST_RESULTS.md; patterns/dotnet/xunit-test-patterns.md (only for .NET diffs) | other reviewers' reports; REVIEW_CHECKLIST.md; CODING_PROGRESS.md; patterns/ beyond the xunit test reference; docs/ |
+| reviewer-testing | its context packet; ORCHESTRATOR_CONSTRAINTS.md; the diff, test files, and TEST_RESULTS.md (absent in REVIEW_ONLY) | other reviewers' reports; REVIEW_CHECKLIST.md; CODING_PROGRESS.md; patterns/ beyond the target language's test-patterns file; docs/ |
 | reviewer-quality | its context packet; ORCHESTRATOR_CONSTRAINTS.md; the diff and files in scope | other reviewers' reports; REVIEW_CHECKLIST.md; CODING_PROGRESS.md; TEST_RESULTS.md; patterns/; docs/ |
 | reviewer-security | its context packet; ORCHESTRATOR_CONSTRAINTS.md; the diff and files in scope | other reviewers' reports; REVIEW_CHECKLIST.md; CODING_PROGRESS.md; TEST_RESULTS.md; patterns/; docs/ |
 | review-synthesizer | the four REVIEW_*.md; TEST_RESULTS.md (cycle facts arrive via its prompt) | ORCHESTRATOR_CONSTRAINTS.md; source code and diffs (it merges verdicts, never re-reviews); CODING_PROGRESS.md; patterns/; docs/ |
-| doc-generator | the changed-file list in its prompt (or FINAL_STATUS.md when the prompt points there); the shipped source files; the target project's existing docs | shared-workspace REVIEW_*.md and TEST_RESULTS.md; CODING_PROGRESS.md; patterns/; templates/ |
+| doc-generator | the changed-file list in its prompt (or FINAL_STATUS.md when the prompt points there); the shipped source files; the target project's existing docs | shared-workspace REVIEW_*.md and TEST_RESULTS.md; CODING_PROGRESS.md; patterns/; templates/ beyond what the prompt names |
+
+Every writer may additionally load the schema section of `shared-workspace/README.md` for the
+file it writes — always in-contract, and not repeated per row above. reviewer-testing also
+loads the verification-protocol skill and the target language's test-patterns file (its
+contract has the detail).
 
 Reviewer independence is deliberate: four reviewers who cannot see each other's reports produce
 four uncorrelated opinions. Do not "help" a reviewer by pasting another's findings.
@@ -49,7 +54,7 @@ CONSTRAINTS: read ORCHESTRATOR_CONSTRAINTS.md first; it is binding.
 FILES IN SCOPE (the only source files to open unprompted):
   src/Billing/AutopayService.cs (modify)
   src/Billing/RetryPolicy.cs (read)
-  tests/Billing/AutopayServiceTests.cs (extend)
+  tests/Billing/AutopayServiceTests.cs (modify)
 PRIOR STATE (<=5 lines; durable detail is in CODING_PROGRESS.md):
   Subtasks 01-02 DONE. RetryPolicy exists; decision: exponential backoff, max 3 attempts.
 DELIVERABLE: implementation + tests green locally; append one CODING_PROGRESS.md entry
@@ -57,7 +62,10 @@ DELIVERABLE: implementation + tests green locally; append one CODING_PROGRESS.md
 NOT YOUR JOB: migrations, the IPaymentGateway contract, other subtasks, running reviews.
 ```
 
-Markers: `(modify)` = agent changes it, `(read)` = reference only, `(extend)` = append/add to it.
+Markers: `(new)` = agent creates it, `(modify)` = agent changes it, `(read)` = reference only —
+the same set `templates/task.md` uses. Fields bend to the receiving agent's contract: e.g.
+review-synthesizer never reads ORCHESTRATOR_CONSTRAINTS.md, so its packet omits the CONSTRAINTS
+field and carries the run facts (task-id, cycle, max, mode) inline instead.
 
 ## Composition rules
 
@@ -78,7 +86,8 @@ Markers: `(modify)` = agent changes it, `(read)` = reference only, `(extend)` = 
 ## The starved-agent rule
 
 A subagent that needs a file its packet did not name records the gap — coder: a `Blocked on:`
-line in its CODING_PROGRESS.md entry with Status: BLOCKED; other roles: a BLOCKED note in
+line in its CODING_PROGRESS.md entry with Status: BLOCKED (returned, not written, when the
+packet says parallel batch); other roles: a BLOCKED note in
 their output file — and stops. Speculative exploration ("let me just look around the repo") is
 a contract violation, not initiative. The orchestrator fixes the packet and re-delegates.
 

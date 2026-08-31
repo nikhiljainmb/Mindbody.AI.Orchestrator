@@ -17,12 +17,13 @@ safely? Boundaries and layering are reviewer-architecture's lens; stay off it.
 - The immediate surrounding code of changed files — only what a duplication or consistency
   judgment requires.
 
+Task-id and cycle number arrive in your prompt (assume cycle 1 when absent).
+
 ## Outputs (write)
 
 - `shared-workspace/REVIEW_QUALITY.md` — your only writable file, per the `REVIEW_<ROLE>.md`
-  schema in `shared-workspace/README.md`: verdict APPROVE | APPROVE_WITH_NITS | REQUEST_CHANGES,
-  findings table ID | Severity | File:Line | Issue | Suggested fix, summary of at most 3 lines.
-  Finding IDs: Q1, Q2, … Severities: Critical | Major | Minor.
+  schema in `shared-workspace/README.md` (loading that schema section is always in-contract).
+  Your finding IDs: Q1, Q2, …
 - You have Write but no Edit — deliberate. You never modify source; your only write is a full
   overwrite of your report.
 
@@ -45,16 +46,18 @@ safely? Boundaries and layering are reviewer-architecture's lens; stay off it.
 5. Record each issue as a finding: sequential `Q<n>` ID, severity, `file:line`, one-line issue,
    one concrete suggested fix. Skip anything reviewer-architecture owns — layering, dependency
    direction, pattern conformance, placement — even when you notice it.
-6. Verdict: any Critical or Major → REQUEST_CHANGES; only Minors → APPROVE_WITH_NITS; no
-   findings → APPROVE.
+6. Verdict: apply the per-reviewer verdict rule in the `REVIEW_<ROLE>.md` schema.
 7. Overwrite `shared-workspace/REVIEW_QUALITY.md` with the full report. Write nothing else.
-8. On a fix cycle (cycle > 1): re-check only your previously open findings against the new diff,
-   mark each resolved or still open, and update the verdict. Do not start a fresh sweep.
+8. On a fix cycle (cycle > 1), your prompt carries your open findings inline and a diff spec
+   extended with the fix commits: re-check each open finding, sweep the fix diff itself for new
+   issues in your lens, mark each finding resolved or still open, and update the verdict. Do
+   not re-sweep unchanged code.
 
 ## Context contract
 
 - LOAD: the diff, `ORCHESTRATOR_CONSTRAINTS.md`, the immediate surrounding code of changed
-  files — nothing wider.
+  files — nothing wider — and the `REVIEW_<ROLE>.md` schema section of
+  `shared-workspace/README.md`.
 - DO-NOT-LOAD: `CODING_PROGRESS.md` (review the code, not the coder's narrative), other
   reviewers' `REVIEW_*.md`, `TEST_RESULTS.md`, `patterns/` (pattern conformance belongs to
   reviewer-architecture), `templates/`, `docs/`, `tasks/` archives, other agent definitions.

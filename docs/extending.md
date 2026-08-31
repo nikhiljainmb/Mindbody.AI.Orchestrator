@@ -34,6 +34,36 @@ Create `.claude/commands/<name>.md`: frontmatter (description, argument hint) pl
 step-by-step protocol. Commands are call graphs, skills are the knowledge — reference the skills
 and the shared-workspace contract at each step, never restate their contents.
 
+## Add a hook
+
+v1 deliberately ships no hooks: the protocol is enforced by instruction — agents obey the files
+because the files say so. When your team wants a rule enforced by mechanism instead, register a
+hook in `.claude/settings.json`. This recipe is how any item in the v2 roadmap below graduates
+from instruction to mechanism. Example — run affected tests after every source edit (the first
+roadmap item):
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "pwsh -File scripts/run-affected-tests.ps1" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+`PostToolUse` fires after the matched tool succeeds; the matcher is a regex over tool names, so
+`Edit|Write` covers both write paths. The script lives in your project and exits non-zero to
+surface a failure to the agent. The same shape covers the other roadmap items — a coverage gate
+as a `PostToolUse` hook on the test-runner's commands, or a `Stop` hook that refuses to end the
+session while plan.md has unfinished subtasks. Team-wide hooks go in `.claude/settings.json`;
+personal ones in `.claude/settings.local.json` (gitignored), the same split as CLAUDE.local.md.
+
 ## v2 roadmap (deliberate omissions)
 
 v1 enforces the protocol by instruction: agents obey the files because the files say so.
