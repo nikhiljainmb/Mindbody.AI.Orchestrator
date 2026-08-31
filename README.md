@@ -109,6 +109,8 @@ REVIEW_CHECKLIST.md           # synthesizer's merged verdict — the must-fix li
 templates/                 4 fill-in templates the orchestrator instantiates (PRD, plan, ...)
 patterns/
   dotnet/                  proven .NET implementation patterns, loaded only for .NET targets
+payments/                  payment-domain knowledge: repo catalog, AutoPay HLD/LLD/rewrite docs
+                           (canonical source: Notion; loaded only for payment-domain tasks)
 shared-workspace/          live coordination files for the current run (contract in its README)
 tasks/                     durable per-task records: prd.md, plan.md, status.md, verification-checklist.md, final-status.md
 docs/                      adoption.md, extending.md, architecture.md — for humans, never loaded

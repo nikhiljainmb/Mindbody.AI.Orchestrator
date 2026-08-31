@@ -58,8 +58,9 @@ The full file contract (schemas, lifecycle) is in `shared-workspace/README.md`.
 
 - Load a file only when the current decision depends on its contents. Grep/Glob to locate,
   then read only the relevant region.
-- `patterns/` only when the target language matches; `templates/` only when instantiating;
-  `docs/` never during pipeline execution.
+- `patterns/` only when the target language matches; `payments/` only when the task is
+  payment-domain work; `templates/` only when instantiating; `docs/` never during pipeline
+  execution.
 - Never read other agents' definitions, other tasks' directories, or past runs unless the
   human asks.
 - If you feel you need broad context, the task is under-specified: record the gap and stop

@@ -21,5 +21,6 @@
 | Delegate to a subagent / trim bloated context | skill: `context-management` |
 | Build a PRD or ask clarifying questions | skill: `prd-building` |
 | See coordination file schemas | `shared-workspace/README.md` |
+| Payment-domain facts (repo catalog, AutoPay HLD/LLD) | `payments/` — start at its README |
 
 Personal overrides live in `CLAUDE.local.md` (gitignored — copy `CLAUDE.local.md.example`).

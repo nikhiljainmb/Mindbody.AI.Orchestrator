@@ -79,6 +79,8 @@ field and carries the run facts (task-id, cycle, max, mode) inline instead.
 ## Lazy-loading rules
 
 - patterns/ — only when the target language matches, and only by roles the matrix allows.
+- payments/ — domain knowledge; only when the task touches the payments domain, and only the
+  specific file the subtask needs (start from payments/README.md's table).
 - templates/ — only at the moment of instantiating a file from one.
 - docs/ — never during pipeline execution. Docs explain the system to humans, not to agents
   mid-run.
