@@ -1,0 +1,13 @@
+---
+description: Mindbody AI Orchestrator workflow
+alwaysApply: true
+---
+
+Read AGENTS.md first — roles, invariant rules, and the quality bar live there and bind here.
+
+Cursor has no subagents and no slash commands. To run a workflow, open the matching file in
+.claude/commands/ (coordinate.md, ac.md, review.md) and follow it as a step-by-step protocol
+yourself: play each role sequentially — coder, test-runner, the four reviewers, synthesizer —
+and write the same shared-workspace/ files each role owns, per shared-workspace/README.md.
+
+Load .claude/skills/*/SKILL.md on demand as reference docs; never preemptively.
